@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            flex-direction: column;
+        }
+        .gallery {
+            max-width: 600px;
+            text-align: center;
+        }
+        .gallery img {
+            width: 30%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            color: #333;
+            margin-top: 10px;
+        }
+        #timer {
+            font-size: 1.5em;
+            color: #555;
+            margin-top: 20px;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="gallery">
+        <h1>Timer with Taeyeon</h1>
+        <img src="letter_to_myself_01.jpg" alt="Taeyeon 1">
+        <img src="letter_to_myself_02.jpg" alt="Taeyeon 2">
+        <img src="letter_to_myself_03.jpg" alt="Taeyeon 3">
+
+        <!-- 타이머 컨트롤 -->
+        <div class="controls">
+            <label for="minutes">Minutes:</label>
+            <select id="minutes">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+            </select>
+            <label for="seconds">Seconds:</label>
+            <select id="seconds">
+                <option value="0">00</option>
+                <option value="5">05</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+            </select>
+            <button onclick="startCountdown()">Start Timer</button>
+            <button onclick="stopCountdown()">Stop Timer</button>
+            <button onclick="resetCountdown()">Reset Timer</button>
+        </div>
+
+        <!-- 타이머 표시 -->
+        <div id="timer">00:00</div>
+    </div>
+
+    <script>
+        let countdownInterval;
+        let timeRemaining;
+        let isPaused = false;
+        let blinkInterval;  // 타이틀 변경 간격용 변수
+
+        function startCountdown() {
+            clearInterval(countdownInterval);
+            clearInterval(blinkInterval);  // 기존 타이틀 변경 초기화
+            document.title = "Timer";  // 타이틀 초기화
+
+            if (!isPaused) {
+                const minutes = parseInt(document.getElementById("minutes").value, 10);
+                const seconds = parseInt(document.getElementById("seconds").value, 10);
+                timeRemaining = (minutes * 60) + seconds;
+            }
+            isPaused = false;
+
+            updateTimerDisplay();
+
+            countdownInterval = setInterval(() => {
+                timeRemaining -= 1;
+                updateTimerDisplay();
+
+                if (timeRemaining <= 0) {
+                    clearInterval(countdownInterval);
+                    startBlinkingTitle();  // 타이틀 변경 시작
+                }
+            }, 1000);
+        }
+
+        function stopCountdown() {
+            clearInterval(countdownInterval);
+            isPaused = true;
+        }
+
+        function resetCountdown() {
+            clearInterval(countdownInterval);
+            clearInterval(blinkInterval);  // 타이틀 변경 중지
+            document.title = "Timer";  // 타이틀 초기화
+            const minutes = parseInt(document.getElementById("minutes").value, 10);
+            const seconds = parseInt(document.getElementById("seconds").value, 10);
+            timeRemaining = (minutes * 60) + seconds;
+            isPaused = false;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = String(Math.floor(timeRemaining / 60)).padStart(2, '0');
+            const secs = String(timeRemaining % 60).padStart(2, '0');
+            document.getElementById("timer").textContent = `${mins}:${secs}`;
+        }
+
+        function startBlinkingTitle() {
+            let isOriginalTitle = true;
+            blinkInterval = setInterval(() => {
+                document.title = isOriginalTitle ? "Time's Up!" : "Timer";
+                isOriginalTitle = !isOriginalTitle;
+            }, 300);  // 1초마다 타이틀을 변경하여 깜박이는 효과
+        }
+    </script>
+</body>
+</html>
